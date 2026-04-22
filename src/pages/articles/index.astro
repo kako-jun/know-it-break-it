@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const articles = await getCollection('articles');
+
+const domainLabels: Record<string, string> = {
+  art: '美術',
+  music: '音楽',
+  manzai: '漫才',
+  manga: '漫画',
+  movie: '映画',
+};
+
+const difficultyLabels: Record<string, string> = {
+  beginner: '初級',
+  intermediate: '中級',
+  advanced: '上級',
+};
+
+const difficultyClasses: Record<string, string> = {
+  beginner: 'bg-green-100 text-green-800',
+  intermediate: 'bg-yellow-100 text-yellow-800',
+  advanced: 'bg-red-100 text-red-800',
+};
+---
+
+<BaseLayout title="記事一覧 | Know It. Break It." description="ドメイン別の記事一覧。型を知って、武器にしろ。">
+  <main class="max-w-4xl mx-auto px-4 py-12">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">記事一覧</h1>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {articles.map((article) => (
+        <a
+          href={`/articles/${article.slug}`}
+          class="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+        >
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+              {domainLabels[article.data.domain]}
+            </span>
+            <span
+              class={`inline-block px-2 py-0.5 rounded text-xs font-medium ${difficultyClasses[article.data.difficulty]}`}
+            >
+              {difficultyLabels[article.data.difficulty]}
+            </span>
+          </div>
+
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">
+            {article.data.title}
+          </h2>
+
+          <p class="text-gray-600 text-sm line-clamp-2 mb-3">
+            {article.data.description}
+          </p>
+
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            {article.data.tags.map((tag) => (
+              <span class="inline-block px-2 py-0.5 rounded text-xs bg-blue-50 text-blue-700">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <time class="text-xs text-gray-400" datetime={article.data.publishedAt.toISOString()}>
+            {article.data.publishedAt.toLocaleDateString('ja-JP')}
+          </time>
+        </a>
+      ))}
+    </div>
+  </main>
+</BaseLayout>
