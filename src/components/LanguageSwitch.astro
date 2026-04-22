@@ -1,20 +1,30 @@
 ---
+import type { Locale } from '../lib/i18n';
+
 interface Props {
-  currentLang: 'ja' | 'en';
+  currentLang: Locale;
   currentPath: string;
 }
 
 const { currentLang, currentPath } = Astro.props;
-const targetLang = currentLang === 'ja' ? 'en' : 'ja';
+const targetLang: Locale = currentLang === 'ja' ? 'en' : 'ja';
 
-let targetPath = currentPath;
-if (currentPath.startsWith(`/${currentLang}/`)) {
-  targetPath = currentPath.replace(`/${currentLang}/`, `/${targetLang}/`);
-} else if (currentPath === `/${currentLang}`) {
-  targetPath = `/${targetLang}`;
+function normalizePath(path: string): string {
+  return path.replace(/\/$/, '') || '/';
 }
 
-const labels: Record<string, string> = {
+const normalizedPath = normalizePath(currentPath);
+const prefix = `/${currentLang}`;
+const targetPrefix = `/${targetLang}`;
+
+let targetPath = currentPath;
+if (normalizedPath === prefix) {
+  targetPath = targetPrefix;
+} else if (normalizedPath.startsWith(`${prefix}/`)) {
+  targetPath = currentPath.replace(`${prefix}/`, `${targetPrefix}/`);
+}
+
+const labels: Record<Locale, string> = {
   ja: '日本語',
   en: 'English',
 };
