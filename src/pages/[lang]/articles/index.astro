@@ -6,23 +6,29 @@ import {
   difficultyLabels,
   difficultyClasses,
   getArticleSlug,
-} from '../../../lib/article';
+  formatDate,
+  formatDateIso,
+  uiLabels,
+  getStaticPathsForLang,
+  type Locale,
+} from '../../../lib/i18n';
 
 export function getStaticPaths() {
-  return [{ params: { lang: 'ja' } }, { params: { lang: 'en' } }];
+  return getStaticPathsForLang();
 }
 
-const lang = Astro.params.lang as 'ja' | 'en';
+const lang = Astro.params.lang as Locale;
 const articles = await getCollection('articles', ({ data }) => data.lang === lang);
+const labels = uiLabels[lang];
 ---
 
 <BaseLayout
-  title="記事一覧 | Know It. Break It."
-  description="ドメイン別の記事一覧。型を知って、武器にしろ。"
+  title={`${labels.articleListTitle} | Know It. Break It.`}
+  description={labels.articleListDescription}
   lang={lang}
 >
   <main class="max-w-4xl mx-auto px-4 py-12">
-    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">記事一覧</h1>
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">{labels.articleListTitle}</h1>
 
     <div class="grid gap-6 md:grid-cols-2">
       {
@@ -33,12 +39,12 @@ const articles = await getCollection('articles', ({ data }) => data.lang === lan
           >
             <div class="flex flex-wrap gap-2 mb-3">
               <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                {domainLabels[article.data.domain]}
+                {domainLabels[lang][article.data.domain]}
               </span>
               <span
                 class={`inline-block px-2 py-0.5 rounded text-xs font-medium ${difficultyClasses[article.data.difficulty]}`}
               >
-                {difficultyLabels[article.data.difficulty]}
+                {difficultyLabels[lang][article.data.difficulty]}
               </span>
             </div>
 
@@ -54,8 +60,8 @@ const articles = await getCollection('articles', ({ data }) => data.lang === lan
               ))}
             </div>
 
-            <time class="text-xs text-gray-400" datetime={article.data.publishedAt.toISOString()}>
-              {article.data.publishedAt.toLocaleDateString('ja-JP')}
+            <time class="text-xs text-gray-400" datetime={formatDateIso(article.data.publishedAt)}>
+              {formatDate(article.data.publishedAt, lang)}
             </time>
           </a>
         ))

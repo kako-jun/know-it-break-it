@@ -6,7 +6,11 @@ import {
   difficultyLabels,
   difficultyClasses,
   getArticleSlug,
-} from '../../../lib/article';
+  formatDate,
+  formatDateIso,
+  uiLabels,
+  type Locale,
+} from '../../../lib/i18n';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -17,15 +21,12 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const lang = Astro.params.lang as 'ja' | 'en';
+const lang = Astro.params.lang as Locale;
 const { Content } = await article.render();
+const labels = uiLabels[lang];
 ---
 
-<BaseLayout
-  title={article.data.title}
-  description={article.data.description}
-  lang={article.data.lang}
->
+<BaseLayout title={article.data.title} description={article.data.description} lang={lang}>
   <main class="max-w-3xl mx-auto px-4 py-12">
     <article class="prose prose-slate max-w-none">
       <header class="mb-10 not-prose">
@@ -33,12 +34,12 @@ const { Content } = await article.render();
           <span
             class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700"
           >
-            {domainLabels[article.data.domain]}
+            {domainLabels[lang][article.data.domain]}
           </span>
           <span
             class={`inline-block px-3 py-1 rounded-full text-sm font-medium ${difficultyClasses[article.data.difficulty]}`}
           >
-            {difficultyLabels[article.data.difficulty]}
+            {difficultyLabels[lang][article.data.difficulty]}
           </span>
           {
             article.data.tags.map((tag) => (
@@ -56,13 +57,13 @@ const { Content } = await article.render();
         <p class="text-gray-600 text-lg mb-4">{article.data.description}</p>
 
         <div class="flex items-center gap-4 text-sm text-gray-500">
-          <time datetime={article.data.publishedAt.toISOString()}>
-            公開: {article.data.publishedAt.toLocaleDateString('ja-JP')}
+          <time datetime={formatDateIso(article.data.publishedAt)}>
+            {labels.published}: {formatDate(article.data.publishedAt, lang)}
           </time>
           {
             article.data.updatedAt && (
-              <time datetime={article.data.updatedAt.toISOString()}>
-                更新: {article.data.updatedAt.toLocaleDateString('ja-JP')}
+              <time datetime={formatDateIso(article.data.updatedAt)}>
+                {labels.updated}: {formatDate(article.data.updatedAt, lang)}
               </time>
             )
           }
@@ -81,7 +82,7 @@ const { Content } = await article.render();
         href={`/${lang}/articles/`}
         class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
       >
-        ← 記事一覧に戻る
+        {labels.backToArticles}
       </a>
     </div>
   </main>
