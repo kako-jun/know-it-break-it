@@ -1,14 +1,19 @@
 ---
+import LanguageSwitch from '../components/LanguageSwitch.astro';
+import type { Locale } from '../lib/i18n';
+
 interface Props {
   title: string;
   description?: string;
+  lang?: Locale;
 }
 
-const { title, description = 'Know It. Break It.' } = Astro.props;
+const { title, description = 'Know It. Break It.', lang = 'ja' } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,6 +22,9 @@ const { title, description = 'Know It. Break It.' } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
+    <header class="max-w-4xl mx-auto px-4 py-4 flex justify-end">
+      <LanguageSwitch currentLang={lang} currentPath={currentPath} />
+    </header>
     <slot />
   </body>
 </html>

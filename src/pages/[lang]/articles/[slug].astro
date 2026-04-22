@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  domainLabels,
+  difficultyLabels,
+  difficultyClasses,
+  getArticleSlug,
+  formatDate,
+  formatDateIso,
+  uiLabels,
+  type Locale,
+} from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({
+    params: { lang: article.data.lang, slug: getArticleSlug(article) },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const lang = Astro.params.lang as Locale;
+const { Content } = await article.render();
+const labels = uiLabels[lang];
+---
+
+<BaseLayout title={article.data.title} description={article.data.description} lang={lang}>
+  <main class="max-w-3xl mx-auto px-4 py-12">
+    <article class="prose prose-slate max-w-none">
+      <header class="mb-10 not-prose">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span
+            class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700"
+          >
+            {domainLabels[lang][article.data.domain]}
+          </span>
+          <span
+            class={`inline-block px-3 py-1 rounded-full text-sm font-medium ${difficultyClasses[article.data.difficulty]}`}
+          >
+            {difficultyLabels[lang][article.data.difficulty]}
+          </span>
+          {
+            article.data.tags.map((tag) => (
+              <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
+                {tag}
+              </span>
+            ))
+          }
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          {article.data.title}
+        </h1>
+
+        <p class="text-gray-600 text-lg mb-4">{article.data.description}</p>
+
+        <div class="flex items-center gap-4 text-sm text-gray-500">
+          <time datetime={formatDateIso(article.data.publishedAt)}>
+            {labels.published}: {formatDate(article.data.publishedAt, lang)}
+          </time>
+          {
+            article.data.updatedAt && (
+              <time datetime={formatDateIso(article.data.updatedAt)}>
+                {labels.updated}: {formatDate(article.data.updatedAt, lang)}
+              </time>
+            )
+          }
+        </div>
+      </header>
+
+      <div
+        class="prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:text-gray-800 prose-h3:mt-8 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600"
+      >
+        <Content />
+      </div>
+    </article>
+
+    <div class="mt-12 not-prose">
+      <a
+        href={`/${lang}/articles/`}
+        class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+      >
+        {labels.backToArticles}
+      </a>
+    </div>
+  </main>
+</BaseLayout>

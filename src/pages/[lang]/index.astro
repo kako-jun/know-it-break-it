@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getStaticPathsForLang, type Locale } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return getStaticPathsForLang();
+}
+
+const lang = Astro.params.lang as Locale;
+const isJa = lang === 'ja';
+---
+
+<BaseLayout
+  title="Know It. Break It."
+  description={isJa
+    ? 'あたまのネジとはずしかた — 型を知って、武器にしろ。'
+    : 'Know It. Break It. — Learn the rules. Then break them.'}
+  lang={lang}
+>
+  <main>
+    <section class="hero">
+      <h1>{isJa ? 'あたまのネジとはずしかた' : 'Know It. Break It.'}</h1>
+      <p class="tagline">Know It. Break It.</p>
+      <p class="description">
+        {
+          isJa
+            ? 'プロが見ているポイントがある。それは言語化できる。型を知って、武器にしろ。'
+            : 'There are points that pros look at. They can be verbalized. Know the rules. Then break them.'
+        }
+      </p>
+    </section>
+
+    <section class="domains">
+      <h2>{isJa ? 'ドメイン' : 'Domains'}</h2>
+      <ul>
+        <li>{isJa ? '美術（構図・象徴・色彩）' : 'Art (Composition, Symbolism, Color)'}</li>
+        <li>{isJa ? '音楽（コード進行・転調・外し）' : 'Music (Chord Progression, Modulation)'}</li>
+        <li>{isJa ? '漫才（転回・普遍性・タイムオーバー）' : 'Comedy (Turning, Universality)'}</li>
+        <li>{isJa ? '漫画（編集者の評価軸・持ち込みの壁）' : "Manga (Editor's Criteria)"}</li>
+        <li>{isJa ? '映画（ストーリー構造）' : 'Film (Story Structure)'}</li>
+      </ul>
+    </section>
+
+    <section class="cta">
+      <a href={`/${lang}/articles/`}>{isJa ? '記事一覧を見る' : 'View Articles'}</a>
+    </section>
+  </main>
+</BaseLayout>
