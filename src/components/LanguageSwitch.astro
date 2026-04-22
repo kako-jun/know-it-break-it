@@ -1,0 +1,29 @@
+---
+interface Props {
+  currentLang: 'ja' | 'en';
+  currentPath: string;
+}
+
+const { currentLang, currentPath } = Astro.props;
+const targetLang = currentLang === 'ja' ? 'en' : 'ja';
+
+let targetPath = currentPath;
+if (currentPath.startsWith(`/${currentLang}/`)) {
+  targetPath = currentPath.replace(`/${currentLang}/`, `/${targetLang}/`);
+} else if (currentPath === `/${currentLang}`) {
+  targetPath = `/${targetLang}`;
+}
+
+const labels: Record<string, string> = {
+  ja: '日本語',
+  en: 'English',
+};
+---
+
+<div class="flex items-center gap-2 text-sm">
+  <span class="text-gray-500">{labels[currentLang]}</span>
+  <span class="text-gray-300">|</span>
+  <a href={targetPath} class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+    {labels[targetLang]}
+  </a>
+</div>
