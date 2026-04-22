@@ -1,15 +1,25 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { domainLabels, difficultyLabels, difficultyClasses } from '../../lib/article';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  domainLabels,
+  difficultyLabels,
+  difficultyClasses,
+  getArticleSlug,
+} from '../../../lib/article';
 
-const articles = await getCollection('articles');
+export function getStaticPaths() {
+  return [{ params: { lang: 'ja' } }, { params: { lang: 'en' } }];
+}
+
+const lang = Astro.params.lang as 'ja' | 'en';
+const articles = await getCollection('articles', ({ data }) => data.lang === lang);
 ---
 
 <BaseLayout
   title="記事一覧 | Know It. Break It."
   description="ドメイン別の記事一覧。型を知って、武器にしろ。"
-  lang="ja"
+  lang={lang}
 >
   <main class="max-w-4xl mx-auto px-4 py-12">
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">記事一覧</h1>
@@ -18,7 +28,7 @@ const articles = await getCollection('articles');
       {
         articles.map((article) => (
           <a
-            href={`/articles/${article.slug}`}
+            href={`/${lang}/articles/${getArticleSlug(article)}`}
             class="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
           >
             <div class="flex flex-wrap gap-2 mb-3">

@@ -1,17 +1,23 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { domainLabels, difficultyLabels, difficultyClasses } from '../../lib/article';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  domainLabels,
+  difficultyLabels,
+  difficultyClasses,
+  getArticleSlug,
+} from '../../../lib/article';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
   return articles.map((article) => ({
-    params: { slug: article.slug },
+    params: { lang: article.data.lang, slug: getArticleSlug(article) },
     props: { article },
   }));
 }
 
 const { article } = Astro.props;
+const lang = Astro.params.lang as 'ja' | 'en';
 const { Content } = await article.render();
 ---
 
@@ -72,7 +78,7 @@ const { Content } = await article.render();
 
     <div class="mt-12 not-prose">
       <a
-        href="/articles"
+        href={`/${lang}/articles/`}
         class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
       >
         ← 記事一覧に戻る

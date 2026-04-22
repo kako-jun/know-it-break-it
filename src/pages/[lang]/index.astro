@@ -1,10 +1,17 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ja' } }, { params: { lang: 'en' } }];
+}
+
+const lang = Astro.params.lang as 'ja' | 'en';
 ---
 
 <BaseLayout
   title="Know It. Break It."
   description="あたまのネジとはずしかた — Learn the rules. Then break them."
+  lang={lang}
 >
   <main>
     <section class="hero">
@@ -25,6 +32,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <li>漫画（編集者の評価軸）</li>
         <li>映画（ストーリー構造）</li>
       </ul>
+    </section>
+
+    <section class="cta">
+      <a href={`/${lang}/articles/`}>記事一覧を見る</a>
     </section>
   </main>
 </BaseLayout>

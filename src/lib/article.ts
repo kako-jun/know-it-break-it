@@ -23,3 +23,7 @@ export const difficultyClasses: Record<Difficulty, string> = {
   intermediate: 'bg-yellow-100 text-yellow-800',
   advanced: 'bg-red-100 text-red-800',
 };
+
+export function getArticleSlug(article: Article): string {
+  return article.slug.replace(/-en$/, '');
+}
