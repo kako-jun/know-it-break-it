@@ -6,9 +6,17 @@ interface Props {
   title: string;
   description?: string;
   lang?: Locale;
+  languageSwitchHref?: string;
+  alternateHref?: string;
 }
 
-const { title, description = 'Know It. Break It.', lang = 'ja' } = Astro.props;
+const {
+  title,
+  description = 'Know It. Break It.',
+  lang = 'ja',
+  languageSwitchHref,
+  alternateHref,
+} = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
@@ -18,12 +26,21 @@ const currentPath = Astro.url.pathname;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {
+      alternateHref && (
+        <link rel="alternate" hreflang={lang === 'ja' ? 'en' : 'ja'} href={alternateHref} />
+      )
+    }
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
     <header class="max-w-4xl mx-auto px-4 py-4 flex justify-end">
-      <LanguageSwitch currentLang={lang} currentPath={currentPath} />
+      <LanguageSwitch
+        currentLang={lang}
+        currentPath={currentPath}
+        alternateHref={languageSwitchHref}
+      />
     </header>
     <slot />
   </body>

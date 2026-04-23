@@ -6,6 +6,10 @@ import {
   difficultyLabels,
   difficultyClasses,
   getArticleSlug,
+  getAlternateLocale,
+  getArticleHref,
+  getArticleListHref,
+  findArticleTranslation,
   formatDate,
   formatDateIso,
   uiLabels,
@@ -22,11 +26,24 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 const lang = Astro.params.lang as Locale;
+const targetLang = getAlternateLocale(lang);
+const articles = await getCollection('articles');
+const translatedArticle = findArticleTranslation(article, articles, targetLang);
+const languageSwitchHref = translatedArticle
+  ? getArticleHref(translatedArticle)
+  : getArticleListHref(targetLang);
+const alternateHref = translatedArticle ? getArticleHref(translatedArticle) : undefined;
 const { Content } = await article.render();
 const labels = uiLabels[lang];
 ---
 
-<BaseLayout title={article.data.title} description={article.data.description} lang={lang}>
+<BaseLayout
+  title={article.data.title}
+  description={article.data.description}
+  lang={lang}
+  languageSwitchHref={languageSwitchHref}
+  alternateHref={alternateHref}
+>
   <main class="max-w-3xl mx-auto px-4 py-12">
     <article class="prose prose-slate max-w-none">
       <header class="mb-10 not-prose">

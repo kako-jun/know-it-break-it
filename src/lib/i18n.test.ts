@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { getArticleSlug, formatDate, formatDateIso } from './i18n';
+import {
+  findArticleTranslation,
+  formatDate,
+  formatDateIso,
+  getAlternateLocale,
+  getArticleHref,
+  getArticleListHref,
+  getArticleSlug,
+  getLocalizedPath,
+} from './i18n';
 
 describe('getArticleSlug', () => {
   it('removes language suffix from slug', () => {
@@ -32,6 +41,67 @@ describe('getArticleSlug', () => {
       data: { lang: 'en' },
     } as unknown as Parameters<typeof getArticleSlug>[0];
     expect(getArticleSlug(article)).toBe('sample-english');
+  });
+});
+
+describe('getAlternateLocale', () => {
+  it('returns the other supported locale', () => {
+    expect(getAlternateLocale('ja')).toBe('en');
+    expect(getAlternateLocale('en')).toBe('ja');
+  });
+});
+
+describe('getLocalizedPath', () => {
+  it('switches the locale prefix for home pages', () => {
+    expect(getLocalizedPath('/ja/', 'ja', 'en')).toBe('/en/');
+    expect(getLocalizedPath('/en', 'en', 'ja')).toBe('/ja/');
+  });
+
+  it('switches the locale prefix for nested paths', () => {
+    expect(getLocalizedPath('/ja/articles/', 'ja', 'en')).toBe('/en/articles/');
+  });
+
+  it('falls back to the target locale root outside localized paths', () => {
+    expect(getLocalizedPath('/unexpected', 'ja', 'en')).toBe('/en/');
+  });
+
+  it('falls back to the target locale root for unknown nested localized paths', () => {
+    expect(getLocalizedPath('/ja/unknown/', 'ja', 'en')).toBe('/en/');
+  });
+});
+
+describe('article href helpers', () => {
+  it('builds localized article and article-list hrefs', () => {
+    const article = {
+      slug: 'sample-en',
+      data: { lang: 'en' },
+    } as unknown as Parameters<typeof getArticleHref>[0];
+    expect(getArticleHref(article)).toBe('/en/articles/sample/');
+    expect(getArticleListHref('ja')).toBe('/ja/articles/');
+  });
+});
+
+describe('findArticleTranslation', () => {
+  it('finds a counterpart by normalized slug and target language', () => {
+    const jaArticle = {
+      slug: 'sample',
+      data: { lang: 'ja' },
+    } as unknown as Parameters<typeof findArticleTranslation>[0];
+    const enArticle = {
+      slug: 'sample-en',
+      data: { lang: 'en' },
+    } as unknown as Parameters<typeof findArticleTranslation>[1][number];
+
+    expect(findArticleTranslation(jaArticle, [jaArticle, enArticle], 'en')).toBe(enArticle);
+  });
+
+  it('returns undefined when no counterpart exists', () => {
+    const jaArticle = {
+      slug: 'sample',
+      data: { lang: 'ja' },
+    } as unknown as Parameters<typeof findArticleTranslation>[0];
+
+    expect(findArticleTranslation(jaArticle, [jaArticle], 'en')).toBeUndefined();
   });
 });
 

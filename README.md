@@ -31,6 +31,9 @@ Know It. Break It.
 - `/en/` — English
 - 言語切り替えUIは全ページに表示
 - 記事も `lang` フィールドで言語別管理
+- 記事詳細の言語切り替えは同じ正規化 slug の翻訳記事へ移動する
+- 翻訳記事が未作成の場合、404 を避けるため相手言語の記事一覧へ移動する
+- SEO 用 `rel="alternate"` は翻訳記事が存在する場合のみ出力する
 
 ## Content Guidelines
 
@@ -39,7 +42,7 @@ Know It. Break It.
 - 日本語記事: `{slug}.md`（例: `sample.md`）
 - 英語記事: `{slug}-en.md`（例: `sample-en.md`）
 - `lang` frontmatter とファイル名サフィックスを一致させること
-- URL スラグからは言語サフィックスが除去される（`sample-en` → `/en/articles/sample`）
+- URL スラグからは言語サフィックスが除去される（`sample-en` → `/en/articles/sample/`）
 
 ### 多言語コンテンツの追加
 

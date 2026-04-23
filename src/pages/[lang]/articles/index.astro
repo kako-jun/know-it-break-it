@@ -5,7 +5,7 @@ import {
   domainLabels,
   difficultyLabels,
   difficultyClasses,
-  getArticleSlug,
+  getArticleHref,
   formatDate,
   formatDateIso,
   uiLabels,
@@ -34,7 +34,7 @@ const labels = uiLabels[lang];
       {
         articles.map((article) => (
           <a
-            href={`/${lang}/articles/${getArticleSlug(article)}`}
+            href={getArticleHref(article)}
             class="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
           >
             <div class="flex flex-wrap gap-2 mb-3">

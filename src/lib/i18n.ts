@@ -76,6 +76,49 @@ export function getArticleSlug(article: Article): string {
   return article.slug.endsWith(suffix) ? article.slug.slice(0, -suffix.length) : article.slug;
 }
 
+export function getAlternateLocale(lang: Locale): Locale {
+  return lang === 'ja' ? 'en' : 'ja';
+}
+
+export function getLocalizedPath(
+  currentPath: string,
+  currentLang: Locale,
+  targetLang: Locale
+): string {
+  const normalizedPath = normalizePath(currentPath);
+
+  if (normalizedPath === `/${currentLang}`) {
+    return `/${targetLang}/`;
+  }
+  if (normalizedPath === `/${currentLang}/articles`) {
+    return getArticleListHref(targetLang);
+  }
+  return `/${targetLang}/`;
+}
+
+export function getArticleHref(article: Article): string {
+  return `/${article.data.lang}/articles/${getArticleSlug(article)}/`;
+}
+
+export function getArticleListHref(lang: Locale): string {
+  return `/${lang}/articles/`;
+}
+
+export function findArticleTranslation(
+  article: Article,
+  articles: Article[],
+  targetLang: Locale
+): Article | undefined {
+  const baseSlug = getArticleSlug(article);
+  return articles.find(
+    (candidate) => candidate.data.lang === targetLang && getArticleSlug(candidate) === baseSlug
+  );
+}
+
+function normalizePath(path: string): string {
+  return path.replace(/\/$/, '') || '/';
+}
+
 export function formatDate(date: Date, lang: Locale): string {
   return date.toLocaleDateString(lang === 'ja' ? 'ja-JP' : 'en-US', {
     year: 'numeric',
